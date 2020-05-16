@@ -48,11 +48,6 @@ const NewCarForm = () => {
 			allBrandsUrl = "http://80.249.84.47:11000/api/cars/brands/",
 			allTenantsUrl = "http://80.249.84.47:11000/api/tenants/";
 
-		// async function fetchUserData() {
-		// 	const response = await fetch(allTenantsUrl);
-		// 	setTenants(await response.json());
-		// }
-		// fetchUserData();
 		fetch(allBrandsUrl)
 			.then(res => res.json())
 			.then(
@@ -69,7 +64,6 @@ const NewCarForm = () => {
 			.then(res => res.json())
 			.then(
 				(result) => {
-					console.log(result);
 					setTenants(result);
 				},
 				(error) => {

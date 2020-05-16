@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import MaterialTable from 'material-table';
 
 function Table(props) {
-	const [error, setError] = useState(null);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [items, setItems] = useState([]);
+	const [carsHere, setCarsHere] = useState([]);
+	const carsHereIdArr = [];
 
 	var proxyUrl = 'https://cors-anywhere.herokuapp.com/',
 		targetUrl = "http://80.249.84.47:11000/api/cars/";
+
+
+	var carsHereUrl = "http://80.249.84.47:11000/api/stat/here/ ";
+
 
 	useEffect(() => {
 			fetch(proxyUrl + targetUrl)
@@ -22,9 +27,25 @@ function Table(props) {
 					// exceptions from actual bugs in components.
 					(error) => {
 						setIsLoaded(true);
-						setError(error);
 					}
-				)
+				);
+
+				fetch( carsHereUrl)
+					.then(res => res.json())
+					.then(
+						(result) => {
+							console.log(result);
+							result.map(item => carsHereIdArr.push(item.car));
+							setCarsHere(result);
+							console.log(carsHereIdArr);
+						},
+						// Note: it's important to handle errors here
+						// instead of a catch() block so that we don't swallow
+						// exceptions from actual bugs in components.
+						(error) => {
+							console.log(error);
+						}
+					)
 		}, []);
 
 

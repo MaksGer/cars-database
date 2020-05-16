@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import Table from "./components/table";
 import NewCarForm from "./components/newCarForm";
@@ -7,10 +7,16 @@ import SimpleList from "./components/listOfBrands";
 
 function App() {
     const [isBrandsOpen, setIsBrandOpen] = useState(false);
+
+
     const handleBrandsTab = () => {
         setIsBrandOpen(!isBrandsOpen);
-        console.log(isBrandsOpen);
+
     };
+
+
+
+
     return (
     <div className="App container">
         <Box className="header-wrapper">
@@ -24,7 +30,8 @@ function App() {
                 </Button>
             </div>
         </Box>
-      <Table/>
+        {isBrandsOpen ?
+            <div>kkkk</div> : <Table/>}
       <SimpleList/>
     </div>
   );
