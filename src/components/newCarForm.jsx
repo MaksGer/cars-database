@@ -13,16 +13,18 @@ import {
 	Typography, Button
 } from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {getAllBrands} from "../serverRequest/formData";
 
 
 const NewCarForm = () => {
 	const [brands, setBrands] = useState([]);
 	const [cars, setCars] = useState([]);
 	const [tenants, setTenants] = useState([]);
-	const [selectBrand, setSelectBrand] = useState([]);
+	const [selectBrand, setSelectBrand] = useState('');
 	const allCarsThisBrand = "http://80.249.84.47:11000/api/cars/brands/";
 	const [invalidFlagCarNumber, setInvalidFlagCarNumber] = useState(true);
+	const [selectedTenant, setSelectedTenant] = useState('');
+	const [selectedModel, setSelectedModel] = useState('');
+	const [carNumber, setCarNumber] = useState('');
 
 	const handleBrandSelect = (event) => {
 		setSelectBrand(event.target.value);
@@ -34,7 +36,6 @@ const NewCarForm = () => {
 			.then(res => res.json())
 			.then(
 				(result) => {
-					// console.log(result);
 					setCars(result);
 				},
 				(error) => {
@@ -43,16 +44,32 @@ const NewCarForm = () => {
 			);
 	};
 
+	const handleSelectedModel = (event) => {
+		setSelectedModel(event.target.value);
+	};
+	const handleSelectedTenant = (event) => {
+		setSelectedTenant(event.target.value);
+	};
+
+	const submitForm = () => {
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({"car_number": carNumber, "car_brand": selectBrand, "car_model": selectedModel, "car_tenant": selectedTenant })
+		};
+
+		fetch('http://80.249.84.47:11000/api/cars/add/', requestOptions)
+			.then(response => response.json())
+	};
+
 	useEffect(() => {
-		const proxyUrl = "https://cors-anywhere.herokuapp.com/",
-			allBrandsUrl = "http://80.249.84.47:11000/api/cars/brands/",
+		const allBrandsUrl = "http://80.249.84.47:11000/api/cars/brands/",
 			allTenantsUrl = "http://80.249.84.47:11000/api/tenants/";
 
 		fetch(allBrandsUrl)
 			.then(res => res.json())
 			.then(
 				(result) => {
-					// console.log(result);
 					setBrands(result);
 				},
 				(error) => {
@@ -76,11 +93,9 @@ const NewCarForm = () => {
 		let result = event.target.value.match(`^[0-9]{4} [A-Z]{2}-[0-9]{1}$`) ||
 			event.target.value.match(`^[A-Z]{2} [0-9]{4}-[0-9]{1}$`);
 		result ? setInvalidFlagCarNumber(true) : setInvalidFlagCarNumber(false);
-		console.log(result);
-	}
-
-	function submitForm() {
-
+		if (result) {
+			setCarNumber(event.target.value);
+		}
 	}
 
 	return (
@@ -91,13 +106,9 @@ const NewCarForm = () => {
 					aria-controls="panel1a-content"
 					id="panel1a-header"
 				>
-					<Typography className="text">Expansion Panel 1</Typography>
+					<Typography className="text">Add new car</Typography>
 				</ExpansionPanelSummary>
 				<ExpansionPanelDetails className="form-wrapper">
-					<Typography>
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-						sit amet blandit leo lobortis eget.
-					</Typography>
 					<form>
 						<Box className="form-wrapper">
 							<FormControl error={!invalidFlagCarNumber}>
@@ -106,7 +117,7 @@ const NewCarForm = () => {
 									id="car-input"
 									aria-describedby="my-helper-text"
 									onBlur={handleCarNumberInput}/>
-								<FormHelperText id="my-helper-text">Template.</FormHelperText>
+								<FormHelperText id="my-helper-text">Only "ZZ-0000-7" and "4547 ZZ-7" cases are valid</FormHelperText>
 							</FormControl>
 							<FormControl>
 								<InputLabel id="car-brand-label">Car Brand</InputLabel>
@@ -118,7 +129,7 @@ const NewCarForm = () => {
 								>
 									{brands.map((item) => {
 										return (
-											<MenuItem value={item.id}>{item.name}</MenuItem>
+											<MenuItem value={item.id} key={item.id}>{item.name}</MenuItem>
 										)
 									})}
 								</Select>
@@ -128,12 +139,12 @@ const NewCarForm = () => {
 								<Select
 									labelId="car-brand-label"
 									id="car-brand-select"
-									// value={age}
-									// onChange={handleChange}
+									value={selectedModel}
+									onChange={handleSelectedModel}
 								>
 									{cars.map((item) => {
 										return (
-											<MenuItem value={item.id}>{item.name}</MenuItem>
+											<MenuItem value={item.id} key={item.id}>{item.name}</MenuItem>
 										)
 									})}
 								</Select>
@@ -143,23 +154,26 @@ const NewCarForm = () => {
 								<Select
 									labelId="car-brand-label"
 									id="car-brand-select"
-									// value={age}
-									// onChange={handleChange}
+									value={selectedTenant}
+									onChange={handleSelectedTenant}
 								>
 									{tenants.map((item) => {
 										return (
-											<MenuItem value={item.id}>{item.name}</MenuItem>
+											<MenuItem value={item.id} key={item.id}>{item.name}</MenuItem>
 										)
 									})}
 								</Select>
 							</FormControl>
 						</Box>
-						<Button
+						<Box mt={4}>
+							<Button
 							variant="contained"
 							onClick={submitForm}
+							className="submit-button"
 						>
 							Submit
 						</Button>
+						</Box>
 					</form>
 				</ExpansionPanelDetails>
 			</ExpansionPanel>
